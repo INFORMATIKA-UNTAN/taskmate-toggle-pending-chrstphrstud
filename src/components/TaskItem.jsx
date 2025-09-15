@@ -1,7 +1,9 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function TaskItem({ task, onToggle }) {
+export default function TaskItem({ task, onToggle, onDelete }) {
   const isDone = task.status === 'done';
+
+  const isPending = task.status === 'pending';
 
   const getCategoryStyle = (category) => {
     switch (category) {
@@ -24,15 +26,26 @@ export default function TaskItem({ task, onToggle }) {
           <Text style={styles.desc}>{task.description}</Text>
           <View style={styles.metaRow}>
             <View style={[styles.catBadge, getCategoryStyle(task.category)]}>
-              <Text style={styles.catText}>{task.category}</Text>
+              <Text style={styles.catText}>{task.category ?? 'Umum'}</Text>
             </View>
             <Text style={styles.meta}>Due {task.deadline}</Text>
           </View>
         </View>
 
-        <View style={[styles.statusBadge, isDone ? styles.badgeDone : styles.badgePending]}>
-          <Text style={styles.badgeText}>{isDone ? 'Done' : 'Todo'}</Text>
+        {/* Tombol hapus kecil */}
+        <TouchableOpacity style={styles.deleteBtn} onPress={() => onDelete?.(task)}>
+          <Text style={styles.deleteText}>🗑</Text>
+        </TouchableOpacity>
+
+        <View style={[
+          styles.statusBadge,
+          isDone ? styles.badgeDone : isPending ? styles.badgePending : styles.badgeTodo
+        ]}>
+          <Text style={styles.badgeText}>
+            {isDone ? 'Done' : isPending ? 'Pending' : 'Todo'}
+          </Text>
         </View>
+
       </View>
     </TouchableOpacity>
   );
@@ -67,12 +80,21 @@ const styles = StyleSheet.create({
   catIoT: { backgroundColor: '#f59e0b' }, // kuning
   catDefault: { backgroundColor: '#94a3b8' }, // abu
 
+  // Delete button kecil
+  deleteBtn: {
+    marginHorizontal: 6,
+    padding: 4,
+    borderRadius: 6,
+    backgroundColor: '#fee2e2',
+  },
+  deleteText: { fontSize: 14 },
+
   // Status Badge
   statusBadge: {
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 8,
-    marginLeft: 12,
+    marginLeft: 6,
   },
   badgePending: { backgroundColor: '#fee2e2' },
   badgeDone: { backgroundColor: '#dcfce7' },
